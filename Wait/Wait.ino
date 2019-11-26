@@ -5,12 +5,12 @@
 #include "LedControl.h"
 
 
-LedControl lc = LedControl(12,11,10,1);
+LedControl lc = LedControl(12,10,11,12);
 
 
 void start() {
     lc.clearDisplay(0);
-    for(int r = 0; r < 8; r++){
+    for(int r = 0; r < 2; r++){
         for(int c = 0; c < 8; c++){
             lc.setLed(0, r, c, HIGH);
             delay(50);
@@ -25,15 +25,15 @@ int matrix[24][32];
 
 void update(){
 
-    for (int i = 0; i < 24; ++i) {
-      for (int j = 0; j < 32; ++j){
-        if (matrix[i][j] == 1){
+    for (int r = 0; r < 24; ++r) {
+      for (int c = 0; c < 32; ++c){
+        if (matrix[r][c] == 1){
            if (r < 8) {
               lc.setLed(c/8, r, c%8, HIGH);
            }else if (r >= 8 && r < 16) {
               lc.setLed(7 - c/8, r - 8, 7 - c%8, HIGH);
            }else {
-              lc.setLed(8 + c/8, r - 16, c % 8);
+              lc.setLed(8 + c/8, r - 16, c % 8, HIGH);
            }
         } 
      }
@@ -42,15 +42,15 @@ void update(){
 }
 
 void setup() {
-  // The MAX72XX is in power-saving mode on startup,
-  // we have to do a wakeup call
-  pinMode(11, INPUT);
 
-  lc.shutdown(0,false);
+
+  for (int i = 0; i < 8; ++i) {
+  lc.shutdown(i,false);
   // Set the brightness to a medium values
-  lc.setIntensity(0, 8);
+  lc.setIntensity(i, 8);
   // and clear the display
-  lc.clearDisplay(0);
+  lc.clearDisplay(i);
+  }
 
 
   for (int i = 0; i < 24; ++i) {
@@ -76,10 +76,10 @@ void loop() {
    
     update();
 
-    bar(4, 13);
-    bar(8, 9);
+    bar(4, 9);
+    bar(8, 7);
     bar(16, 5);
-    bar(24, 9);
-    bar(28, 13);
+    bar(24, 7);
+    bar(28, 9);
     delay(1000);
 }
