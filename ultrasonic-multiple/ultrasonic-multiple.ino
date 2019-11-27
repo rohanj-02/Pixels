@@ -21,15 +21,36 @@ void readsensor(int i){ // This function is for first sensor.
   digitalWrite (trigPin[i], LOW);
   duration[i] = pulseIn (echoPin[i], HIGH);
   distance[i] = (duration[i]/2) / 29.1;
-  Serial.print(i+" Sensor: ");
-  Serial.print(distance[i]); 
-  Serial.print("cm    ");
 }
 
+void printsensor(int i){
+  Serial.print(i + 1);
+  Serial.print(" Sensor: ");
+  Serial.print(distance[i]); 
+  Serial.print("cm    ");
+
+}
 void loop() {
-Serial.println("\n");
+//Serial.println("\n");
 for (int i = 0; i < no_of_ultrasonic; i++){
   readsensor(i);
+//  printsensor(i);
 }
+if(distance[0] < 50 && distance[1] > 50 && distance[2] > 50){
+  Serial.println("1");
+}
+else if((distance[1] < 50 && distance[2] > 50 && distance[0] > 50) || (distance[0] < 50 && distance[1] < 50 && distance[2] < 50)){
+  Serial.println("3");
+}
+else if(distance[2] < 50 && distance[1] > 50 && distance[0] > 50){
+  Serial.println("5");
+}
+else if(distance[1] < 50 && distance[0] < 50 && distance[2] > 50){
+  Serial.println("2");
+}
+else if(distance[1] < 50 && distance[2] < 50 && distance[0] > 50){
+  Serial.println("4");
+}
+
 delay(100);
 }
