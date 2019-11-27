@@ -1,34 +1,35 @@
-/*
-* Ultrasonic Sensor HC-SR04 and Arduino Tutorial
-*
-* by Dejan Nedelkovski,
-* www.HowToMechatronics.com
-*
-*/
-// defines pins numbers
-const int trigPin = 6;
-const int echoPin = 7;
-// defines variables
-long duration;
-int distance;
+const int no_of_ultrasonic = 3;
+int trigPin[no_of_ultrasonic] = {6,8,10};
+int echoPin[no_of_ultrasonic] = {7,9,11};
+int duration[3];
+int distance[3];
+
 void setup() {
-pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
-pinMode(echoPin, INPUT); // Sets the echoPin as an Input
-Serial.begin(9600); // Starts the serial communication
+  for(int i = 0; i < no_of_ultrasonic; i++){
+    pinMode(trigPin[i], OUTPUT);
+  }
+  for(int i = 0; i < no_of_ultrasonic; i++){
+    pinMode(echoPin[i], INPUT);
+  }
+  Serial.begin (9600);
 }
+
+void readsensor(int i){ // This function is for first sensor.
+  int duration1, distance1;
+  digitalWrite (trigPin[i], HIGH);
+  delayMicroseconds (10);
+  digitalWrite (trigPin[i], LOW);
+  duration[i] = pulseIn (echoPin[i], HIGH);
+  distance[i] = (duration[i]/2) / 29.1;
+  Serial.print(i+" Sensor: ");
+  Serial.print(distance[i]); 
+  Serial.print("cm    ");
+}
+
 void loop() {
-// Clears the trigPin
-digitalWrite(trigPin, LOW);
-delayMicroseconds(2);
-// Sets the trigPin on HIGH state for 10 micro seconds
-digitalWrite(trigPin, HIGH);
-delayMicroseconds(10);
-digitalWrite(trigPin, LOW);
-// Reads the echoPin, returns the sound wave travel time in microseconds
-duration = pulseIn(echoPin, HIGH);
-// Calculating the distance
-distance= duration*0.034/2;
-// Prints the distance on the Serial Monitor
-Serial.print("Distance: ");
-Serial.println(distance);
+Serial.println("\n");
+for (int i = 0; i < no_of_ultrasonic; i++){
+  readsensor(i);
+}
+delay(100);
 }
