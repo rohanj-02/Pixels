@@ -1,6 +1,6 @@
 const int no_of_ultrasonic = 3;
-int trigPin[no_of_ultrasonic] = {6,8,10};
-int echoPin[no_of_ultrasonic] = {7,9,11};
+int trigPin[no_of_ultrasonic] = {A0,A2,A4};
+int echoPin[no_of_ultrasonic] = {A1,A3,A5};
 int duration[3];
 int distance[3];
 
@@ -30,12 +30,9 @@ void printsensor(int i){
   Serial.print("cm    ");
 
 }
-void loop() {
-//Serial.println("\n");
-for (int i = 0; i < no_of_ultrasonic; i++){
-  readsensor(i);
-//  printsensor(i);
-}
+
+void getPosition(){
+
 if(distance[0] < 50 && distance[1] > 50 && distance[2] > 50){
   Serial.println("1");
 }
@@ -51,6 +48,17 @@ else if(distance[1] < 50 && distance[0] < 50 && distance[2] > 50){
 else if(distance[1] < 50 && distance[2] < 50 && distance[0] > 50){
   Serial.println("4");
 }
+
+}
+
+void loop() {
+//Serial.println("\n");
+for (int i = 0; i < no_of_ultrasonic; i++){
+  readsensor(i);
+//  printsensor(i);
+}
+getPosition();
+
 
 delay(100);
 }
