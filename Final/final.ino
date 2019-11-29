@@ -6,7 +6,7 @@ int trigPin[no_of_ultrasonic] = {A0,A2,A4,2,4,6};
 int echoPin[no_of_ultrasonic] = {A1,A3,A5,3,5,7};
 int duration[6];
 int distance[6];
-int distance_threshold = 50;
+int distance_threshold = 30;
 
 void setup() {
   
@@ -41,7 +41,7 @@ void readsensor(int i){
   delayMicroseconds (10);
   digitalWrite (trigPin[i], LOW);
   duration[i] = pulseIn (echoPin[i], HIGH);
-  distance[i] = (duration[i]/2) / 29.1;
+  distance[i] = abs((duration[i]/2) / 29.1);
 }
 
 void printsensor(int i){
@@ -53,11 +53,11 @@ void printsensor(int i){
 
 int getPosition(){
 
-  if(distance[3] < distance_threshold && distance[0] < distance_threshold && distance[4] > distance_threshold && distance[1] < distance_threshold){
+  if(abs(distance[3]) < distance_threshold && abs(distance[0]) < distance_threshold && abs(distance[4]) > distance_threshold && abs(distance[1]) < distance_threshold){
     Serial.println("12");
     return 12;
   }
-  else if(distance[5] < distance_threshold && distance[2] < distance_threshold && distance[1] > distance_threshold && distance[4] > distance_threshold){
+  else if(abs(distance[5]) < distance_threshold && abs(distance[2]) < distance_threshold && distance[1] > distance_threshold && distance[4] > distance_threshold){
     Serial.println("3");
     return 3;
   }
@@ -101,6 +101,8 @@ int getPosition(){
     Serial.println("9");
     return 9;
   }
+  Serial.println("0");
+  return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -828,48 +830,7 @@ byte lrueyebr[] =
 
 /////////////////////////////
 
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-unsigned long long start, curr_time;
-
-int las = -1;
-
-void loop() {
-  
-    for(int i = 0; i < no_of_ultrasonic; i++){
-      readsensor(i);
-    }
-    if (getPosition() == 0) {
-        waiting();
-        start = millis();
-    }else {
-
-      curr_time = millis();
-
-      if ((curr_time - start) % 30000 < 10000) {
-          if (las != 1) {
-            clea();
-          }
-          bars(getPosition());
-          las = 1;
-      }else if ((curr_time - start) % 30000 < 20000) {
-          if (las != 2) {
-            clea();
-          }
-          eyes(getPosition());
-          las = 2;
-      }else if ((curr_time - start) % 30000 < 30000) {
-          if (las != 3) {
-            clea();
-          }
-          flowers(getPosition());
-          las = 3;
-      }
-    }
-}
 
 void clea() {
   for (int i = 0; i < 8; ++i) {
@@ -1039,6 +1000,22 @@ void bars(int x) {
       for (int i = 0; i < 8; ++i) {
           lc.setRow(4,i,b2[i]);
       }
+    }else {
+      for (int i = 0; i < 8; ++i) {
+          lc.setRow(7,i,b0[i]);
+      }
+
+      for (int i = 0; i < 8; ++i) {
+          lc.setRow(6,i,b0[i]);
+      }
+
+      for (int i = 0; i < 8; ++i) {
+          lc.setRow(5,i,b0[i]);
+      }
+
+      for (int i = 0; i < 8; ++i) {
+          lc.setRow(4,i,b0[i]);
+      }
     }
 }
 
@@ -1046,40 +1023,40 @@ void eyes(int x) {
     if (x == 0) {
       eyes();
     }else if (x == 1 || x == 2) {
-      right_up();
+      left_up();
     }else if (x == 3) {
       middle_up();
     }else if (x == 4 || x == 5) {
-      left_up();
+      right_up();
     }else if (x == 6 || x == 7) {
-      right_down();
+      left_down();
     }else if (x == 8) {
       middle_down();
     }else if (x == 9 || x == 10) {
-      left_down();
+      right_down();
     }else if (x == 12) {
-      left();
-      delay(50);
-      lleft();
-    }else if (x == 11) {
       right();
       delay(50);
       rright();
+    }else if (x == 11) {
+      left();
+      delay(50);
+      lleft();
     }
 }
 int last = -1;
 void flowers(int x) {
 
-    if (last != 2) {
+    if (last != 2 || x == 0) {
     closed_flower(7, 'c');
     }
-    if (last != 3) {
+    if (last != 3 || x == 0) {
     closed_flower(1, 'c');
     }
-    if (last != 4) {
+    if (last != 4 || x == 0) {
     closed_flower(2, 'd');
     }
-    if (last != 5) {
+    if (last != 5 || x == 0) {
     closed_flower(3, 'c');
     }
 
@@ -1116,7 +1093,7 @@ void flowers(int x) {
         flower_closing(3, 'c');
       }
       if (last != 4) {
-      flower_opening(3, 'd');
+      flower_opening(2, 'd');
       }
       last = 4;
     }else if (x == 5 || x == 10) {
@@ -1608,3 +1585,64 @@ void flower_opening(int x, char ch) {     // creates a opening effect of flower 
     delay(100);
 }
 /////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+unsigned long long start, curr_time;
+
+int las = -1;
+
+bool t = false;
+bool first = true;
+unsigned long long st = millis();
+    
+void loop() {
+    delay(50);
+    for(int i = 0; i < no_of_ultrasonic; i++){
+      readsensor(i);
+      printsensor(i);
+    }
+    
+    if (getPosition() != 0 || millis() - st < 5000) {
+      if (getPosition() != 0) {
+        first = true;
+      }
+      t = true;
+      curr_time = millis();
+
+      if ((curr_time - start) % 30000 < 10000) {
+          if (las != 1) {
+            clea();
+          }
+          bars(getPosition());
+          las = 1;
+      }else if ((curr_time - start) % 30000 < 20000) {
+          if (las != 2) {
+            clea();
+          }
+          eyes(getPosition());
+          las = 2;
+      }else if ((curr_time - start) % 30000 < 30000) {
+          if (las != 3) {
+            clea();
+          }
+          flowers(getPosition());
+          las = 3;
+      }
+    }else {
+
+     if (first){
+      first = false;
+      st = millis();
+     }else {
+            if (t) {
+              clea();
+              t = false;
+              waiting();
+              start = millis();
+            }
+       
+     }
+    }
+  }
