@@ -1072,7 +1072,7 @@ void flowers(int x) {
           flower_opening(7, 'c');
       }
       last = 2;
-    }else if (x == 3 || x == 8) {
+    }else if (x == 3) {
       if (last == 2) {
         flower_closing(7, 'c');
       }else if (last == 4) {
@@ -1084,7 +1084,7 @@ void flowers(int x) {
       flower_opening(1, 'c');
       }
       last = 3;
-    }else if (x == 4 || x == 9) {
+    }else if (x == 9) {
       if (last == 2) {
         flower_closing(1, 'c');
       }else if (last == 3) {
@@ -1096,7 +1096,7 @@ void flowers(int x) {
       flower_opening(2, 'd');
       }
       last = 4;
-    }else if (x == 5 || x == 10) {
+    }else if (x == 5) {
       if (last == 2) {
         flower_closing(7, 'c');
       }else if (last == 4) {
@@ -1466,7 +1466,7 @@ void flower_closing(int x, char ch) {     // creates a closing effect of flower 
     delay(100);
 }
 
-
+int la = false;
 void flower_opening(int x, char ch) {     // creates a opening effect of flower by displaying different states
 
     for (int i = 0; i < 8; ++i) {
@@ -1598,7 +1598,6 @@ bool first = true;
 unsigned long long st = millis();
     
 void loop() {
-    delay(50);
     for(int i = 0; i < no_of_ultrasonic; i++){
       readsensor(i);
       printsensor(i);
@@ -1630,6 +1629,7 @@ void loop() {
           flowers(getPosition());
           las = 3;
       }
+      la = false;
     }else {
 
      if (first){
@@ -1637,8 +1637,10 @@ void loop() {
       st = millis();
      }else {
             if (t) {
-              clea();
-              t = false;
+              if (la == false) {
+                  clea();
+              }
+              la = true;
               waiting();
               start = millis();
             }
