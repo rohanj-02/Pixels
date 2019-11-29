@@ -1,7 +1,3 @@
-/*  
- *   Play pong on an 8x8 matrix - project from itopen.it
- */
- 
 #include "LedControl.h"
 LedControl lc = LedControl(13,11,12,8);
 LedControl ld = LedControl(10,8,9,4);
